@@ -10,8 +10,8 @@ pub struct CloseVoteRecord<'info> {
     #[account(mut)]
     pub voter: Signer<'info>,
 
+    /// CHECK: Creator account is just used for verification
     pub creator: AccountInfo<'info>,
-
     #[account(
         mut,
         has_one = creator @ ErrorCode::InvalidCreator,
@@ -22,15 +22,14 @@ pub struct CloseVoteRecord<'info> {
     pub box_: Account<'info, Box>,
 
     #[account(
-        init,
+        mut,
         close = voter,
-        space = DISCRIMINATOR + VoteRecord::INIT_SPACE,
         seeds = [
             b"vote_record",
             voter.key().as_ref(),
             box_.key().as_ref()
         ],
-        bump,
+        bump = vote_record.bump
     )]
     pub vote_record: Account<'info, VoteRecord>,
 
@@ -38,7 +37,7 @@ pub struct CloseVoteRecord<'info> {
 }
 
 impl <'info> CloseVoteRecord<'info> {
-    pub fn close_vote_record(&mut self, _ref_id: String, bump: u8) -> Result<()> {
+    pub fn close_vote_record(&mut self, _ref_id: String) -> Result<()> {
         println!("Closing vote record for box with post_id: {}", self.box_.ref_id);
 
         Ok(())
@@ -56,8 +55,8 @@ pub struct CloseBox<'info> {
         close = creator,
         seeds = [b"box", _ref_id.as_bytes().as_ref()],
         bump = box_.bump,
-        constraint = box_.ref_id == _ref_id @ ErrorCode::InvalidRefId
-        constraint = box_.creator == creator.key() @ ErrorCode::UnothorizedClose
+        constraint = box_.ref_id == _ref_id @ ErrorCode::InvalidRefId,
+        constraint = box_.creator == creator.key() @ ErrorCode::UnauthorizedClose
     )]
     pub box_: Account<'info, Box>,
     

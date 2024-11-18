@@ -13,8 +13,8 @@ pub struct Vote<'info> {
     #[account(mut)]
     pub voter: Signer<'info>,
 
+    /// CHECK: Creator account is just used for verification
     pub creator: AccountInfo<'info>,
-
     #[account(
         mut,
         has_one = creator @ ErrorCode::InvalidCreator,
