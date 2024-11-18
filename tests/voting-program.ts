@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { assert } from "chai";
 import { VotingProgram } from "../target/types/voting_program";
 
@@ -14,7 +14,6 @@ describe("voting-program", () => {
   let boxPDA: PublicKey;
   let voteRecordPDA: PublicKey;
   let boxBump: number;
-  let voteRecordBump: number;
 
   before(async () => {
     const [boxAddress, bBump] = PublicKey.findProgramAddressSync(
@@ -24,7 +23,7 @@ describe("voting-program", () => {
     boxPDA = boxAddress;
     boxBump = bBump;
 
-    const [voteRecordAddress, vBump] = PublicKey.findProgramAddressSync(
+    const [voteRecordAddress] = PublicKey.findProgramAddressSync(
       [
         Buffer.from("vote_record"),
         provider.wallet.publicKey.toBuffer(),
@@ -33,7 +32,6 @@ describe("voting-program", () => {
       program.programId
     );
     voteRecordPDA = voteRecordAddress;
-    voteRecordBump = vBump;
   });
 
   it("Initialization test", async () => {
@@ -67,11 +65,13 @@ describe("voting-program", () => {
       const tx = await program.methods
         .upvote(refId, boxBump)
         .accounts({
+          voter: provider.wallet.publicKey,
+          creator: provider.wallet.publicKey,
           box_: boxPDA,
           voteRecord: voteRecordPDA,
-          voter: provider.wallet.publicKey,
           systemProgram: SystemProgram.programId,
         })
+        .signers([provider.wallet.payer])
         .rpc();
       const voteRecord = await program.account.voteRecord.fetch(voteRecordPDA);
       assert.equal(voteRecord.hasVoted, true, "Vote not recorded");
@@ -87,14 +87,48 @@ describe("voting-program", () => {
     }
   });
 
-  it("Allows creator to close their box", async () => {
+  it("VoteRecord close", async () => {
     try {
       const tx = await program.methods
-        .close(refId, boxBump)
+        .closeVoteRecord(refId)
         .accounts({
-          box_: boxPDA,
+          voter: provider.wallet.publicKey,
           creator: provider.wallet.publicKey,
+          box_: boxPDA,
+          voteRecord: voteRecordPDA,
+          systemProgram: SystemProgram.programId
         })
+        .signers([provider.wallet.payer])
+        .rpc();
+
+      console.log("VoteRecord closed successfully with signature:", tx);
+
+      try {
+        await program.account.voteRecord.fetch(voteRecordPDA);
+        assert.fail("VoteRecord should not exist after closure");
+      } catch (err) {
+        assert.include(
+          err.toString(),
+          "Account does not exist",
+          "VoteRecord account still exists after closure"
+        );
+      }
+    } catch (err) {
+      console.error("Error closing vote record:", err);
+      throw err;
+    }
+  })
+
+  it("Box close", async () => {
+    try {
+      const tx = await program.methods
+        .closeBox(refId)
+        .accounts({
+          creator: provider.wallet.publicKey,
+          box_: boxPDA,
+          systemProgram: SystemProgram.programId
+        })
+        .signers([provider.wallet.payer])
         .rpc();
 
       console.log("Box closed successfully with signature:", tx);
