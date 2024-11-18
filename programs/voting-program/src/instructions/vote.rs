@@ -8,16 +8,19 @@ use crate::state::VoteType::{Upvote, Downvote};
 use crate::error::ErrorCode;
 
 #[derive(Accounts)]
-#[instruction(ref_id: String)]
+#[instruction(_ref_id: String)]
 pub struct Vote<'info> {
     #[account(mut)]
     pub voter: Signer<'info>,
 
+    pub creator: AccountInfo<'info>,
+
     #[account(
         mut,
-        seeds = [b"box", ref_id.as_bytes().as_ref()],
+        has_one = creator @ ErrorCode::InvalidCreator,
+        seeds = [b"box", _ref_id.as_bytes().as_ref()],
         bump = box_.bump,
-        constraint = box_.ref_id == ref_id @ ErrorCode::InvalidRefId
+        constraint = box_.ref_id == _ref_id @ ErrorCode::InvalidRefId
     )]
     pub box_: Account<'info, Box>,
 
@@ -38,7 +41,7 @@ pub struct Vote<'info> {
 }
 
 impl <'info> Vote<'info> {
-    pub fn upvote(&mut self, ref_id: String, bump: u8) -> Result<()> {
+    pub fn upvote(&mut self, _ref_id: String, bump: u8) -> Result<()> {
         if self.vote_record.has_voted {
             return Err(ErrorCode::AlreadyVoted.into());
         }
@@ -56,7 +59,7 @@ impl <'info> Vote<'info> {
         Ok(())
     }
 
-    pub fn downvote(&mut self, ref_id: String, bump: u8) -> Result<()> {
+    pub fn downvote(&mut self, _ref_id: String, bump: u8) -> Result<()> {
         if self.vote_record.has_voted {
             return Err(ErrorCode::AlreadyVoted.into());
         }

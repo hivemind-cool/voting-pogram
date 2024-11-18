@@ -9,7 +9,7 @@ pub use constants::*;
 pub use instructions::*;
 pub use state::*;
 
-declare_id!("23vsX5uS5S4J4oLLQcepH9sFCyCAcFXBYQXUtnqr1Vur");
+declare_id!("J9zEWRH1AeggcKxuXHMTuwDn1RSUXuNK3DdrPMvFTZbq");
 
 #[program]
 pub mod voting_program {
@@ -30,8 +30,13 @@ pub mod voting_program {
         Ok(())
     }
 
-    pub fn close(ctx: Context<Close>, ref_id: String, bump: u8) -> Result<()> {
-        ctx.accounts.close_box(ref_id, bump)?;
+    pub fn close_vote_record(ctx: Context<CloseVoteRecord>, ref_id: String) -> Result<()> {
+        ctx.accounts.close_vote_record(ref_id)?;
+        Ok(())
+    }
+
+    pub fn close_box(ctx: Context<CloseBox>, ref_id: String) -> Result<()> {
+        ctx.accounts.close_box(ref_id)?;
         Ok(())
     }
 }
