@@ -1,7 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::state::Box;
-use crate::VoteRecord;
+use crate::state::{Box, VoteRecord};
 use crate::error::ErrorCode;
 
 #[derive(Accounts)]
@@ -37,7 +36,7 @@ pub struct CloseVoteRecord<'info> {
 }
 
 impl <'info> CloseVoteRecord<'info> {
-    pub fn close_vote_record(&mut self, _ref_id: String) -> Result<()> {
+    pub fn vote_record_close(&mut self, _ref_id: String) -> Result<()> {
         println!("Closing vote record for box with post_id: {}", self.box_.ref_id);
 
         Ok(())
@@ -64,7 +63,7 @@ pub struct CloseBox<'info> {
 }
 
 impl <'info> CloseBox<'info> {
-    pub fn close_box(&mut self, _ref_id: String) -> Result<()> {
+    pub fn box_close(&mut self, _ref_id: String) -> Result<()> {
         println!("Closing box with ref_id: {}", self.box_.ref_id);
 
         Ok(())

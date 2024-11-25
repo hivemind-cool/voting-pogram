@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { PublicKey, SystemProgram } from '@solana/web3.js';
+import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { assert } from "chai";
 import { VotingProgram } from "../target/types/voting_program";
 
@@ -27,7 +27,7 @@ describe("voting-program", () => {
       [
         Buffer.from("vote_record"),
         provider.wallet.publicKey.toBuffer(),
-        boxPDA.toBuffer()
+        boxPDA.toBuffer(),
       ],
       program.programId
     );
@@ -50,7 +50,10 @@ describe("voting-program", () => {
       // Fetch the created account
       const boxAccount = await program.account.box.fetch(boxPDA);
 
-      assert.equal(boxAccount.creator.toBase58(), provider.wallet.publicKey.toBase58());
+      assert.equal(
+        boxAccount.creator.toBase58(),
+        provider.wallet.publicKey.toBase58()
+      );
       assert.equal(boxAccount.refId, refId);
       assert.equal(boxAccount.totalVotes.toNumber(), 0);
       assert.equal(boxAccount.bump, boxBump);
@@ -75,10 +78,18 @@ describe("voting-program", () => {
         .rpc();
       const voteRecord = await program.account.voteRecord.fetch(voteRecordPDA);
       assert.equal(voteRecord.hasVoted, true, "Vote not recorded");
-      assert.deepEqual(voteRecord.voteType, { upvote: {} }, "Wrong vote type recorded");
+      assert.deepEqual(
+        voteRecord.voteType,
+        { upvote: {} },
+        "Wrong vote type recorded"
+      );
 
       const boxAccount = await program.account.box.fetch(boxPDA);
-      assert.equal(boxAccount.totalVotes.toNumber(), 1, "Vote count not incremented");
+      assert.equal(
+        boxAccount.totalVotes.toNumber(),
+        1,
+        "Vote count not incremented"
+      );
 
       console.log("Upvote recorded successfully with signature:", tx);
     } catch (err) {
@@ -96,7 +107,7 @@ describe("voting-program", () => {
           creator: provider.wallet.publicKey,
           box_: boxPDA,
           voteRecord: voteRecordPDA,
-          systemProgram: SystemProgram.programId
+          systemProgram: SystemProgram.programId,
         })
         .signers([provider.wallet.payer])
         .rpc();
@@ -117,7 +128,7 @@ describe("voting-program", () => {
       console.error("Error closing vote record:", err);
       throw err;
     }
-  })
+  });
 
   it("Box close", async () => {
     try {
@@ -126,7 +137,7 @@ describe("voting-program", () => {
         .accounts({
           creator: provider.wallet.publicKey,
           box_: boxPDA,
-          systemProgram: SystemProgram.programId
+          systemProgram: SystemProgram.programId,
         })
         .signers([provider.wallet.payer])
         .rpc();

@@ -31,12 +31,12 @@ pub mod voting_program {
     }
 
     pub fn close_vote_record(ctx: Context<CloseVoteRecord>, ref_id: String) -> Result<()> {
-        ctx.accounts.close_vote_record(ref_id)?;
+        ctx.accounts.vote_record_close(ref_id)?;
         Ok(())
     }
 
     pub fn close_box(ctx: Context<CloseBox>, ref_id: String) -> Result<()> {
-        ctx.accounts.close_box(ref_id)?;
+        ctx.accounts.box_close(ref_id)?;
         Ok(())
     }
 }
