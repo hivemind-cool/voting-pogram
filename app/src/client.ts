@@ -155,9 +155,6 @@ export class VotingProgramClient {
       // @ts-ignore
       const boxAccount = await this.program.account.box.fetch(boxPDA);
 
-      // @ts-ignore
-      // const voteRecordAccount = await this.program.account.voteRecord.fetch(voteRecordPDA);
-
       try {
         const accountParams = {
           voter: this.wallet.publicKey,
@@ -189,10 +186,14 @@ export class VotingProgramClient {
 
       // @ts-ignore
       const boxAccount = await this.program.account.box.fetch(boxPDA);
+      // @ts-ignore
+      const voteRecordAccount = await this.program.account.voteRecord.fetch(
+        voteRecordPDA
+      );
 
       try {
         const accountParams = {
-          voter: this.wallet.publicKey,
+          voter: voteRecordAccount.voter,
           creator: boxAccount.creator,
           box_: boxPDA,
           voteRecord: voteRecordPDA,
@@ -213,8 +214,8 @@ export class VotingProgramClient {
 
   async closeVoteRecord(refId: string): Promise<string> {
     return this.retry(async () => {
-      const [boxPDA, _] = await this.findBoxPDA(refId);
-      const [voteRecordPDA, _voteRecordBump] = await this.findVoteRecordPDA(
+      const [boxPDA, _b] = await this.findBoxPDA(refId);
+      const [voteRecordPDA, _v] = await this.findVoteRecordPDA(
         boxPDA,
         this.wallet.publicKey
       );

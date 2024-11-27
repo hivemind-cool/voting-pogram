@@ -100,15 +100,16 @@ describe("voting-program", () => {
 
   it("VoteRecord close", async () => {
     try {
-      const tx = await program.methods
-        .closeVoteRecord(refId)
-        .accounts({
+      const accountParams = {
           voter: provider.wallet.publicKey,
           creator: provider.wallet.publicKey,
           box_: boxPDA,
           voteRecord: voteRecordPDA,
           systemProgram: SystemProgram.programId,
-        })
+        } as any;
+      const tx = await program.methods
+        .closeVoteRecord(refId)
+        .accounts(accountParams)
         .signers([provider.wallet.payer])
         .rpc();
 

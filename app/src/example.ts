@@ -9,15 +9,15 @@ async function main() {
     const client = await VotingProgramClient.init(wallet, programId, "devnet");
 
     // Create a new box
-    const refId = "test-post-4";
-    // console.log("Creating box...");
-    // const createTx = await client.createBox(refId);
-    // console.log("Box created with tx:", createTx);
-    //
-    // // Cast an upvote
-    // console.log("Casting upvote...");
-    // const voteTx = await client.upvote(refId);
-    // console.log("Upvote cast with tx:", voteTx);
+    const refId = "test-post-9";
+    console.log("Creating box...");
+    const createTx = await client.createBox(refId);
+    console.log("Box created with tx:", createTx);
+
+    // Cast an upvote
+    console.log("Casting upvote...");
+    const voteTx = await client.upvote(refId);
+    console.log("Upvote cast with tx:", voteTx);
 
     // Close vote record
     console.log("Closing vote record...");
