@@ -9,7 +9,7 @@ async function main() {
     const client = await VotingProgramClient.init(wallet, programId, "devnet");
 
     // Create a new box
-    const refId = "test-post-9";
+    const refId = "test-post-10";
     console.log("Creating box...");
     const createTx = await client.createBox(refId);
     console.log("Box created with tx:", createTx);
@@ -23,6 +23,11 @@ async function main() {
     console.log("Closing vote record...");
     const closeTx = await client.closeVoteRecord(refId);
     console.log("Vote record closed with tx:", closeTx);
+
+    // Close box
+    console.log("Closing box...");
+    const closeBoxTx = await client.closeBox(refId);
+    console.log("Box closed with tx:", closeBoxTx);
 
   } catch (error) {
     console.error("Error:", error);
