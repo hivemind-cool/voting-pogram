@@ -33,7 +33,7 @@ pub struct Vote<'info> {
             voter.key().as_ref(),
             box_.key().as_ref()
         ],
-        bump,
+        bump
     )]
     pub vote_record: Account<'info, VoteRecord>,
 

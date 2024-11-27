@@ -28,7 +28,7 @@ pub struct CloseVoteRecord<'info> {
             voter.key().as_ref(),
             box_.key().as_ref()
         ],
-        bump = vote_record.bump
+        bump
     )]
     pub vote_record: Account<'info, VoteRecord>,
 
